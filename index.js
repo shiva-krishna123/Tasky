@@ -1,11 +1,12 @@
-
 //const taskContainer=document.getElementsByClassName("task_container"); appear in the form of array
 // Parent element to store cards
+
 const taskContainer=document.querySelector(".task_container");//directly accessing html element
+
 //console.log(taskContainer);
 
 //Global array storage
-const globalStore=[];
+let globalStore=[];
 
 
 //To make dynamic and insert dynamic data
@@ -13,7 +14,7 @@ const newCard = ({id,taskUrl,taskTitle,taskDescription,taskType}) => `<div class
 <div class="card">
   <div class="card-header d-flex justify-content-end gap-3">
     <button type="button" class="btn btn-outline-success"><i class="fa-solid fa-pencil"></i></button>
-    <button type="button" class="btn btn-outline-danger"><i class="fa-solid fa-trash-can"></i></button>                  
+    <button type="button" id=${id} class="btn btn-outline-danger" onclick="deleteCard.apply(this, arguments);"><i class="fa-solid fa-trash-can" onclick="deleteCard.apply(this, arguments);"></i></button>                  
   </div>
   <img src=${taskUrl} 
   class="card-img-top" 
@@ -47,6 +48,9 @@ const loadInitialTaskCards = () => {
   });
 
 };
+
+
+
 const saveChanges = () => {
     const taskData = {
         id: `${Date.now()}`, // unique number for card id 
@@ -83,14 +87,48 @@ const saveChanges = () => {
 
 };
 
+const deleteCard = (event) => {
+  //id
+  event = Window.event;
+  const targetID = event.target.id;
+  const tagname = event.target.tagName;//Button
+  //console.log(targetID);
+
+  // search the globalStore, remove the object which matches with the id
+  // filter -> new array similar to map but filter out some objects in array
+  const newUpdatedArray = globalStore.filter(
+  (cardObject) => cardObject.id !== targetID);
+
+  newUpdatedArray.map((cardObject) =>{
+    const createNewCard = newCard(cardObject);    
+    taskContainer.insertAdjacentHTML("beforeend",createNewCard);
+  });
+  globalStore = newUpdatedArray;
+  localStorage.setItem("tasky",JSON.stringify({cards:globalStore}))
+
+  // access DOM to remove them
+  if(tagname==="BUTTON"){
+    //task_container
+    return taskContainer.removeChild(
+      event.target.parentNode.parentNode.parentNode
+    );
+  }
+  
+  //task_container if it is a icon
+  return taskContainer.removeChild(
+    event.target.parentNode.parentNode.parentNode.parentNode
+  );
+  // loop over the new globalStore, and inject updated cards to DOM xxx doesn't work in DOM
+};
+
 // Parent object of Browser ->  Window
 // Parent obect of html -> DOM -> document
 
 
 // DOM Manipulation-2
 // issues
-// The modal was not closing upon adding new card. -->  Solved
-// the cards were deleted after refresh --> localstorage (5MB of Data in each website)
+// The modal was not closing upon adding new card. -->  [Solved]
+// the cards were deleted after refresh --> localstorage (5MB of Data in each website) -> [Solved]
 
 // features
 // Delete modal feature

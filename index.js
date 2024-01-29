@@ -89,7 +89,7 @@ const saveChanges = () => {
 
 const deleteCard = (event) => {
   //id
-  event = Window.event;
+  event = window.event;
   const targetID = event.target.id;
   const tagname = event.target.tagName;//Button
   //console.log(targetID);
